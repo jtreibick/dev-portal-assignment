@@ -51,6 +51,9 @@
     .crumb{font-size:12px;margin-bottom:16px}
     .fact{padding:13px;border:1px solid var(--line);border-radius:8px;background:#fff}
     .fact.changed{border-color:#c4b5fd;background:#faf8ff}
+    .task-card{margin-bottom:16px;border-left:4px solid var(--nav)}
+    .profile-grid{margin-top:13px}
+    .profile-grid .fact{box-shadow:none;background:#fbfcfd}
     .app-card{padding:0;overflow:hidden}
     .app-list-card{padding:0;overflow:hidden}
     .app-list-head{padding:13px 15px 9px;display:flex;justify-content:space-between;gap:13px;align-items:start}
@@ -93,11 +96,18 @@
     .why{font-size:12px;color:var(--muted)}
     .policy{font-size:11px;color:#57657a;background:#f0f3f7;border-radius:5px;padding:3px 6px;white-space:nowrap}
     .code{font:12px/1.65 ui-monospace,SFMono-Regular,monospace;background:#101828;color:#d9e4f5;padding:15px;border-radius:8px;white-space:pre-wrap}
+    .file-list{display:grid;gap:8px;margin-top:10px}
+    .file-item{display:grid;grid-template-columns:82px 1fr;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid #edf0f3}
+    .file-item:last-child{border-bottom:0}
+    .file-status{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--blue)}
+    .file-path{font-family:ui-monospace,SFMono-Regular,monospace;font-size:12px}
     .check{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #edf0f3}
     .check:last-child{border-bottom:0}
     .checkmark{width:20px;height:20px;border-radius:50%;background:var(--green2);color:var(--green);display:grid;place-items:center;font-weight:900;flex:0 0 auto}
-    .success{max-width:800px;margin:20px auto;text-align:center;padding:38px}
+    .checkwarn{width:20px;height:20px;border-radius:50%;background:var(--amber2);color:var(--amber);display:grid;place-items:center;font-weight:900;flex:0 0 auto}
+    .success{max-width:920px;margin:20px auto;text-align:center;padding:38px}
     .success-icon{width:50px;height:50px;margin:0 auto 13px;border-radius:50%;background:var(--green2);color:var(--green);font-size:28px;display:grid;place-items:center}
+    .audit-grid{text-align:left;margin-top:16px}
     .shallow{max-width:800px}
     .empty-icon{font-size:30px;margin-bottom:9px}
     .hidden{display:none!important}
@@ -370,6 +380,20 @@
         <div class="eyebrow">Production deployment</div>
         <h1>Determine infrastructure</h1>
         <p class="lede">Compass uses repository, environment, ownership, and platform catalog context first. Anything it cannot infer is handled in the side conversation.</p>
+        <section class="card task-card">
+          <div class="row">
+            <div><div class="label">Current task</div><h2>Prepare production infrastructure for checkout-api</h2></div>
+            <span class="pill amber">Production not provisioned</span>
+          </div>
+          <p class="muted">This draft exists because checkout-api already runs in development and staging, but production infrastructure has not been created. The output of this flow is a reviewable GitHub PR; nothing is provisioned until that PR is approved, merged, and the existing CI/CD workflow runs.</p>
+          <div class="compact-summary">
+            <span>Started by · <b>Maya Chen</b></span>
+            <span>Repository · <b>commerce/checkout-api</b></span>
+            <span>Service owner · <b>commerce-platform@company.com</b></span>
+            <span>Infra reviewer · <b>cloud-platform@company.com</b></span>
+          </div>
+          <div class="right-actions" style="margin-top:13px"><button class="btn" onclick="alert('Mock action: deployment request draft saved.')">Save draft</button><button class="btn quiet" onclick="alert('Mock action: deployment request would be abandoned with no infrastructure changes.')">Abandon request</button></div>
+        </section>
         <div class="grid main-aside">
           <main>
             <div class="grid">
@@ -402,6 +426,18 @@
       setTop('checkout-api','Infrastructure proposal');
       const traffic=state.traffic||'Steady';
       const confidential=state.data||'Yes';
+      const dataLabel=state.data==='No'?'No confidential customer data':state.data==='I need help deciding'?'Confidentiality needs review':'Confidential customer data';
+      const profileItems=[
+        ['Repository','commerce/checkout-api'],
+        ['Runtime','Node.js 20'],
+        ['Workload','Stateless HTTP API'],
+        ['Environment','Production'],
+        ['Traffic',traffic],
+        ['Data',dataLabel],
+        ['Region',state.region],
+        ['Availability',state.availability],
+        ['Owner','Commerce Platform']
+      ].map(([label,value])=>`<div class="fact"><div class="label">${label}</div><div class="value">${value}</div></div>`).join('');
       const patternItems=[
         {name:'Compute',system:'Managed container service',why:`Stateless Node.js API; ${traffic} traffic`,policy:'PLAT-001'},
         {name:'Database',system:'Multi-AZ managed PostgreSQL',why:`${confidential} confidential data; ${state.availability} availability`,policy:'DATA-012'},
@@ -419,11 +455,17 @@
         <div class="eyebrow">Proposed production deployment</div>
         <h1>Approved container API foundation</h1>
         <p class="lede">The proposal translates service context and the mock conversation into components the platform team already supports.</p>
+        <section class="card" style="margin-bottom:15px">
+          <div class="row"><div><div class="label">Confirmed deployment profile</div><h2>Inputs behind this recommendation</h2></div><button class="btn" onclick="show('prepare')">Edit answers</button></div>
+          <div class="grid three profile-grid">${profileItems}</div>
+        </section>
         <div class="grid main-aside">
           <section class="card pattern">
             <div class="row"><div><div class="label">Recommended pattern</div><h2>Managed container service + PostgreSQL</h2></div><span class="pill blue">Approved path</span></div>
             ${rows}
             <div class="row"><b>Estimated cost class</b><span>Medium · validate after traffic sizing</span></div>
+            <div class="row"><b>Initial scaling</b><span>${traffic==='Spiky around events'?'2-16 instances · burst guardrail':'2-8 instances · 70% CPU target'}</span></div>
+            <div class="row"><b>Operational impact</b><span>Commerce on-call · standard API alerts · no production traffic cutover yet</span></div>
           </section>
           <aside>
             <div class="card">
@@ -459,11 +501,19 @@
               <div class="row"><b>Developer change</b><span>${state.changed?`Availability ${state.availability} · ${state.region} · ${state.capacity}`:'No changes to inferred requirements'}</span></div>
               ${state.customReason?`<div class="row"><b>Custom variation</b><span class="pill amber">Platform review requested</span></div>`:''}
               <div class="row"><b>Warning</b><span class="pill amber">Confirm traffic estimate before merge</span></div>
+              <h3 style="margin-top:17px">Files changed</h3>
+              <div class="file-list">
+                <div class="file-item"><span class="file-status">Create</span><span><span class="file-path">infra/apps/checkout-api/service.tf</span><br><small class="muted">Managed container service, API gateway, autoscaling policy</small></span></div>
+                <div class="file-item"><span class="file-status">Create</span><span><span class="file-path">infra/apps/checkout-api/postgres.tf</span><br><small class="muted">Encrypted PostgreSQL module, private network attachment</small></span></div>
+                <div class="file-item"><span class="file-status">Create</span><span><span class="file-path">infra/apps/checkout-api/observability.tf</span><br><small class="muted">Telemetry, SLO, and default alert routes</small></span></div>
+                <div class="file-item"><span class="file-status">Update</span><span><span class="file-path">.github/workflows/deploy-production.yml</span><br><small class="muted">Add production plan and policy evidence checks</small></span></div>
+              </div>
               <h3 style="margin-top:17px">Simplified Terraform plan</h3>
               <div class="code">+ module.checkout_api_service
 + module.checkout_api_postgres
 + module.checkout_api_observability
 ~ github/workflows/deploy-production.yml</div>
+              <p class="source">Branch: compass/checkout-api-production-foundation · No production traffic is moved by this PR alone.</p>
             </div>
           </section>
           <aside>
@@ -474,6 +524,7 @@
               <div class="check"><span class="checkmark">✓</span><div><b>SEC-012 · Encryption</b><div class="muted">Database encryption enabled</div></div></div>
               <div class="check"><span class="checkmark">✓</span><div><b>IAM-007 · Least privilege</b><div class="muted">Workload identity configured</div></div></div>
               <div class="check"><span class="checkmark">✓</span><div><b>NET-019 · Network boundary</b><div class="muted">Database has no public route</div></div></div>
+              <div class="check"><span class="checkwarn">!</span><div><b>If a check fails</b><div class="muted">Compass would show the failed policy, plain-language remediation, and either retry validation or request platform help.</div></div></div>
               <button class="btn ${state.validated?'':'primary'}" style="margin-top:13px;width:100%" onclick="state.validated=true;render()">${state.validated?'✓ Validation passed':'Run policy validation'}</button>
             </div>
           </aside>
@@ -492,6 +543,24 @@
           <div class="grid" style="text-align:left;margin-top:25px">
             <div class="card"><div class="label">GitHub status</div><h3>CI checks pending</h3><p class="muted">Terraform plan · policy evidence · module checks</p></div>
             <div class="card"><div class="label">Required next action</div><h3>Commerce Platform review</h3><p class="muted">Reviewer confirms the traffic warning before merge.</p></div>
+          </div>
+          <div class="card audit-grid">
+            <div class="label">Workflow audit summary</div>
+            <h2 style="margin-top:5px">What Compass records for review and day-one metrics</h2>
+            <div class="grid">
+              <div>
+                <div class="row"><span>Workflow</span><span><b>deploy-checkout-api-prod</b></span></div>
+                <div class="row"><span>Branch</span><span>compass/checkout-api-production-foundation</span></div>
+                <div class="row"><span>Decision</span><span>Approved path accepted</span></div>
+                <div class="row"><span>Developer changes</span><span>${state.changed?`${state.availability} · ${state.region} · ${state.capacity}`:'None'}</span></div>
+              </div>
+              <div>
+                <div class="row"><span>Events captured</span><span>repository_selected → pull_request_created</span></div>
+                <div class="row"><span>Validation</span><span>First-pass policy checks passed</span></div>
+                <div class="row"><span>Help requested</span><span>No</span></div>
+                <div class="row"><span>Provisioning</span><span>No infrastructure until GitHub merge + CI/CD</span></div>
+              </div>
+            </div>
           </div>
           <div class="right-actions" style="justify-content:center;margin-top:24px"><button class="btn" onclick="state.pr=false;render()">Return to proposal</button><button class="btn primary" onclick="alert('Mock link: the real implementation would open GitHub PR #482.')">View PR #482 in GitHub ↗</button></div>
         </section>`;
