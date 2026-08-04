@@ -1,6 +1,6 @@
 # Compass deployment workspace
 
-[Repository](https://github.com/jtreibick/intuitive-assignment) · [Prototype](prototype/index.html) · [Backlog](https://github.com/jtreibick/intuitive-assignment/issues)
+[Repository](https://github.com/jtreibick/intuitive-assignment) · [Prototype](prototype/index.html) · [Backlog](https://github.com/jtreibick/intuitive-assignment/issues?q=is%3Aissue%20state%3Aopen%20sort%3Acreated-asc)
 
 ## Executive summary
 
@@ -66,7 +66,7 @@ The first success criterion is learning whether the workflow helps a developer p
 - [Developer context](docs/mvp-delivery-context.md) — MVP assumptions, authority boundaries, and rollout context for the implementation backlog.
 - [Success metrics](success-metrics.md) — P0 measurement and the day-one event contract.
 - [Click-through prototype](prototype/index.html) — a self-contained, static workflow using sample data.
-- [GitHub Issues](https://github.com/jtreibick/intuitive-assignment/issues) — an implementation-first MVP backlog.
+- [GitHub Issues](https://github.com/jtreibick/intuitive-assignment/issues?q=is%3Aissue%20state%3Aopen%20sort%3Acreated-asc) — an implementation-first MVP backlog.
 
 ### Explore the prototype
 
