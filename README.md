@@ -1,4 +1,4 @@
-# Guided infrastructure requests
+# Compass deployment workspace
 
 ## Executive summary
 
