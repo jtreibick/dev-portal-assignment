@@ -193,7 +193,7 @@
   </aside>
 
   <script>
-    const state={view:'workspace',selectedService:'checkout-api',traffic:'',data:'',availability:'99.9%',region:'us-east-1',capacity:'Standard',changed:false,pattern:'standard',tuning:false,customVariation:false,customReason:'',validated:false,pr:false,agentInstalled:false,ideConnected:false,tokenDraft:false,deployStep:0,deploymentConversationComplete:false};
+    const state={view:'workspace',selectedService:'checkout-api',serviceTab:'overview',traffic:'',data:'',availability:'99.9%',region:'us-east-1',capacity:'Standard',changed:false,pattern:'standard',tuning:false,customVariation:false,customReason:'',validated:false,pr:false,agentInstalled:false,ideConnected:false,tokenDraft:false,deployStep:0,deploymentConversationComplete:false};
     const content=document.getElementById('content');
 
     const applicationCatalog={
@@ -221,6 +221,8 @@
     function setTop(){}
     function activateNav(destination){document.querySelectorAll('.nav-btn').forEach(button=>button.classList.toggle('active',button.dataset.destination===destination))}
     function show(view){state.view=view;render();window.scrollTo(0,0)}
+    function openServiceWorkspace(){state.serviceTab='overview';show('service')}
+    function selectServiceTab(tab){state.serviceTab=tab;renderServiceOverview()}
     function choose(key,value){state[key]=value;render()}
     function updateTuning(key,value){state[key]=value;state.changed=true;renderProposal()}
     function toggleTuning(){state.tuning=!state.tuning;state.customVariation=false;renderProposal()}
@@ -235,6 +237,7 @@
     function closeChatDrawer(){
       document.getElementById('chatDrawer').classList.add('hidden');
       if(state.view==='prepare'&&state.deploymentConversationComplete)renderPrepare();
+      if(state.view==='service'&&state.serviceTab==='deploy'&&state.deploymentConversationComplete)renderServiceOverview();
     }
 
     function render(){
@@ -270,7 +273,7 @@
             <div class="row"><span>Service owner email</span><span>${a.ownerEmail}</span></div>
             <div class="row"><span>Infrastructure contact</span><span>${a.infraEmail}</span></div>
             <div class="row"><span>Latest activity</span><span>${a.activity}</span></div>
-            ${id==='checkout-api'?'<div class="right-actions" style="margin-top:12px"><button class="btn" onclick="document.getElementById(\'serviceDrawer\').classList.add(\'hidden\');show(\'service\')">Open service workspace</button><button class="btn primary" onclick="startDeploymentConversation()">Determine infrastructure</button></div>':''}
+            ${id==='checkout-api'?'<div class="right-actions" style="margin-top:12px"><button class="btn" onclick="document.getElementById(\'serviceDrawer\').classList.add(\'hidden\');openServiceWorkspace()">Open service workspace</button><button class="btn primary" onclick="startDeploymentConversation()">Determine infrastructure</button></div>':''}
           </div>
           <div class="card-actions"><button class="text-action" onclick="toggleInlineDetails('app-details-${id}',this)">${id==='checkout-api'?'Hide details ↑':'View details →'}</button></div>
         </article>`).join('');
@@ -325,49 +328,92 @@
     function renderServiceOverview(){
       activateNav('applications');
       setTop('checkout-api','Service owner: commerce-platform@company.com');
-      content.innerHTML=crumb(['Applications','checkout-api','Overview'])+`
+      const tab=state.serviceTab||'overview';
+      const hasDetermined=state.traffic&&state.data;
+      const overviewBody=`
+        <div class="grid main-aside">
+          <main>
+            <section>
+              <div class="label">Environments</div>
+              <h2 style="margin-top:4px">Where this service runs</h2>
+              <div class="environment-grid">
+                <div class="environment-card"><div class="row"><b>Development</b><span class="pill">Healthy</span></div><div class="value">v1.19.0-dev.14</div><div class="source">Deployed 36 min ago · us-east-1</div></div>
+                <div class="environment-card"><div class="row"><b>Staging</b><span class="pill">Healthy</span></div><div class="value">v1.19.0-rc.2</div><div class="source">Deployed 2 hr ago · us-east-1</div></div>
+                <div class="environment-card pending"><div class="row"><b>Production</b><span class="pill amber">Not provisioned</span></div><div class="muted">Infrastructure proposal not yet created.</div><button class="text-action" style="margin-top:10px" onclick="selectServiceTab('deploy')">Open deploy tab →</button></div>
+              </div>
+            </section>
+            <section class="grid" style="margin-top:16px">
+              <div class="card" style="box-shadow:none"><div class="label">Interfaces</div><h3 style="margin-top:5px">REST API · internal</h3><div class="row"><span>Base path</span><span>/v1/checkout</span></div><div class="row"><span>Authentication</span><span>Service identity</span></div></div>
+              <div class="card" style="box-shadow:none"><div class="label">Dependencies</div><h3 style="margin-top:5px">Three detected</h3><div class="row"><span>Data</span><span>PostgreSQL</span></div><div class="row"><span>External API</span><span>Stripe</span></div></div>
+            </section>
+            <section class="card" style="margin-top:16px;box-shadow:none"><div class="label">Operational readiness</div><h2 style="margin-top:5px">Staging signals</h2><div class="grid three"><div><div class="value">99.96%</div><div class="muted">Availability · 7 days</div></div><div><div class="value">184 ms</div><div class="muted">p95 latency</div></div><div><div class="value">0 open</div><div class="muted">Critical alerts</div></div></div></section>
+          </main>
+          <aside>
+            <section class="card" style="box-shadow:none">
+              <div class="label">Ownership</div>
+              <h2 style="margin-top:5px">Teams and contacts</h2>
+              <div class="row"><span>Service owner</span><span><b>Commerce Platform</b><br><small class="muted">commerce-platform@company.com</small></span></div>
+              <div class="row"><span>Infrastructure operated by</span><span>Cloud Platform<br><small class="muted">cloud-platform@company.com</small></span></div>
+              <div class="row"><span>On-call</span><span>commerce-primary</span></div>
+              <div class="row"><span>Repository</span><span><button class="text-action" onclick="alert('Mock GitHub link')">commerce/checkout-api ↗</button></span></div>
+            </section>
+            <section class="card" style="margin-top:14px;box-shadow:none">
+              <div class="label">Recent activity</div>
+              <div class="timeline"><div class="timeline-item"><b>Staging deployed</b><div class="muted">Maya Chen · 2 hr ago</div></div><div class="timeline-item"><b>Policy evidence refreshed</b><div class="muted">Compass · yesterday</div></div><div class="timeline-item"><b>Production draft started</b><div class="muted">Maya Chen · yesterday</div></div></div>
+            </section>
+          </aside>
+        </div>`;
+      const deployBody=`
+        <div class="grid main-aside">
+          <main>
+            <section class="card task-card">
+              <div class="row">
+                <div><div class="label">Current task</div><h2>Prepare production infrastructure for checkout-api</h2></div>
+                <span class="pill amber">Production not provisioned</span>
+              </div>
+              <p class="muted">This tab owns the deployment-start function for the service. The output is a reviewable GitHub PR; nothing is provisioned until that PR is approved, merged, and the existing CI/CD workflow runs.</p>
+              <div class="compact-summary">
+                <span>Started by · <b>Maya Chen</b></span>
+                <span>Repository · <b>commerce/checkout-api</b></span>
+                <span>Service owner · <b>commerce-platform@company.com</b></span>
+                <span>Infra reviewer · <b>cloud-platform@company.com</b></span>
+              </div>
+            </section>
+            <div class="grid">
+              <div class="fact"><div class="label">Resource</div><div class="value">checkout-api</div><div class="source">commerce/checkout-api · main</div></div>
+              <div class="fact"><div class="label">Workload</div><div class="value">Stateless HTTP API</div><div class="source">Dockerfile · server entrypoint · 96% confidence</div></div>
+              <div class="fact"><div class="label">Runtime</div><div class="value">Node.js 20</div><div class="source">package.json · Dockerfile · 99% confidence</div></div>
+              <div class="fact"><div class="label">Database dependency</div><div class="value">PostgreSQL</div><div class="source">Application client and migrations · 97% confidence</div></div>
+              <div class="fact ${state.changed?'changed':''}"><div class="label">Availability target</div><div class="value">${state.availability}</div><div class="source">${state.changed?'Changed by developer':'Commerce Platform default'}</div><button class="btn quiet" onclick="state.changed=true;state.availability='99.95%';renderServiceOverview()">Edit</button></div>
+              <div class="fact"><div class="label">Contacts</div><div class="value">Commerce Platform</div><div class="source">commerce-platform@company.com · cloud-platform@company.com</div></div>
+            </div>
+            <section class="card" style="margin-top:16px">
+              <div class="row"><span>Status</span><span><span class="pill ${hasDetermined?'':'blue'}">${hasDetermined?'Ready for proposal':'Needs AI interview'}</span></span></div>
+              <div class="row"><span>Traffic answer</span><span>${state.traffic||'Not collected yet'}</span></div>
+              <div class="row"><span>Data sensitivity</span><span>${state.data||'Not collected yet'}</span></div>
+              <div class="right-actions" style="margin-top:14px"><button class="btn primary" onclick="startDeploymentConversation()">Determine infrastructure</button>${hasDetermined?'<button class="btn" onclick="show(\'proposal\')">Open proposal</button>':''}</div>
+            </section>
+          </main>
+          <aside class="card agent-note">
+            <div class="eyebrow">How this works</div>
+            <p class="muted">The tab shows deterministic context Compass already has. The drawer handles the small mock conversation and then opens the infrastructure proposal.</p>
+            <h3>Developer control</h3>
+            <p class="muted">You can save, abandon, edit supported settings, or open the proposal after the missing answers are collected.</p>
+            <div class="right-actions" style="margin-top:13px"><button class="btn" onclick="alert('Mock action: deployment request draft saved.')">Save draft</button><button class="btn quiet" onclick="alert('Mock action: deployment request would be abandoned with no infrastructure changes.')">Abandon request</button></div>
+          </aside>
+        </div>`;
+      content.innerHTML=crumb(['Applications','checkout-api',tab==='deploy'?'Deploy':'Overview'])+`
         <div class="card app-card">
           <div class="tabs">
-            <button class="active">Overview</button>
-            <button onclick="show('prepare')">Deploy</button>
+            <button class="${tab==='overview'?'active':''}" onclick="selectServiceTab('overview')">Overview</button>
+            <button class="${tab==='deploy'?'active':''}" onclick="selectServiceTab('deploy')">Deploy</button>
             <button disabled>Interfaces</button>
             <button disabled>Dependencies</button>
             <button disabled>Observe</button>
             <button disabled>Activity</button>
           </div>
           <div class="app-body">
-            <div class="grid main-aside">
-              <main>
-                <section>
-                  <div class="label">Environments</div>
-                  <h2 style="margin-top:4px">Where this service runs</h2>
-                  <div class="environment-grid">
-                    <div class="environment-card"><div class="row"><b>Development</b><span class="pill">Healthy</span></div><div class="value">v1.19.0-dev.14</div><div class="source">Deployed 36 min ago · us-east-1</div></div>
-                    <div class="environment-card"><div class="row"><b>Staging</b><span class="pill">Healthy</span></div><div class="value">v1.19.0-rc.2</div><div class="source">Deployed 2 hr ago · us-east-1</div></div>
-                    <div class="environment-card pending"><div class="row"><b>Production</b><span class="pill amber">Not provisioned</span></div><div class="muted">Infrastructure proposal not yet created.</div><button class="text-action" style="margin-top:10px" onclick="startDeploymentConversation()">Determine infrastructure →</button></div>
-                  </div>
-                </section>
-                <section class="grid" style="margin-top:16px">
-                  <div class="card" style="box-shadow:none"><div class="label">Interfaces</div><h3 style="margin-top:5px">REST API · internal</h3><div class="row"><span>Base path</span><span>/v1/checkout</span></div><div class="row"><span>Authentication</span><span>Service identity</span></div></div>
-                  <div class="card" style="box-shadow:none"><div class="label">Dependencies</div><h3 style="margin-top:5px">Three detected</h3><div class="row"><span>Data</span><span>PostgreSQL</span></div><div class="row"><span>External API</span><span>Stripe</span></div></div>
-                </section>
-                <section class="card" style="margin-top:16px;box-shadow:none"><div class="label">Operational readiness</div><h2 style="margin-top:5px">Staging signals</h2><div class="grid three"><div><div class="value">99.96%</div><div class="muted">Availability · 7 days</div></div><div><div class="value">184 ms</div><div class="muted">p95 latency</div></div><div><div class="value">0 open</div><div class="muted">Critical alerts</div></div></div></section>
-              </main>
-              <aside>
-                <section class="card" style="box-shadow:none">
-                  <div class="label">Ownership</div>
-                  <h2 style="margin-top:5px">Teams and contacts</h2>
-                  <div class="row"><span>Service owner</span><span><b>Commerce Platform</b><br><small class="muted">commerce-platform@company.com</small></span></div>
-                  <div class="row"><span>Infrastructure operated by</span><span>Cloud Platform<br><small class="muted">cloud-platform@company.com</small></span></div>
-                  <div class="row"><span>On-call</span><span>commerce-primary</span></div>
-                  <div class="row"><span>Repository</span><span><button class="text-action" onclick="alert('Mock GitHub link')">commerce/checkout-api ↗</button></span></div>
-                </section>
-                <section class="card" style="margin-top:14px;box-shadow:none">
-                  <div class="label">Recent activity</div>
-                  <div class="timeline"><div class="timeline-item"><b>Staging deployed</b><div class="muted">Maya Chen · 2 hr ago</div></div><div class="timeline-item"><b>Policy evidence refreshed</b><div class="muted">Compass · yesterday</div></div><div class="timeline-item"><b>Production draft started</b><div class="muted">Maya Chen · yesterday</div></div></div>
-                </section>
-              </aside>
-            </div>
+            ${tab==='deploy'?deployBody:overviewBody}
           </div>
         </div>`;
     }
@@ -418,7 +464,7 @@
             <p class="muted">Recommended infrastructure can be edited before review, and GitHub remains the place where the real pull request is approved and merged.</p>
           </aside>
         </div>
-        <div class="actions"><button class="btn" onclick="show('service')">← Service overview</button>${hasDetermined?'<button class="btn primary" onclick="show(\'proposal\')">Open proposal →</button>':''}</div>`;
+        <div class="actions"><button class="btn" onclick="openServiceWorkspace()">← Service overview</button>${hasDetermined?'<button class="btn primary" onclick="show(\'proposal\')">Open proposal →</button>':''}</div>`;
     }
 
     function renderProposal(){
@@ -688,8 +734,15 @@
     }
 
     function startDeploymentConversation(){
-      state.view='prepare';
-      renderPrepare();
+      const fromServiceWorkspace=state.view==='service'||state.view==='workspace';
+      if(fromServiceWorkspace){
+        state.view='service';
+        state.serviceTab='deploy';
+        renderServiceOverview();
+      }else{
+        state.view='prepare';
+        renderPrepare();
+      }
       state.deployStep=0;
       state.deploymentConversationComplete=false;
       document.getElementById('serviceDrawer').classList.add('hidden');
