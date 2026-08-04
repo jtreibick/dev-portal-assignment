@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Compass Developer Portal - Deployment prototype</title>
+  <style>
+    :root{--nav:#101828;--nav2:#182638;--ink:#172033;--muted:#667085;--line:#dfe4ea;--bg:#f5f7fa;--card:#fff;--blue:#1859d1;--blue2:#eaf1ff;--green:#087a55;--green2:#e8f7f1;--amber:#a45b09;--amber2:#fff5df;--purple:#6941c6;--shadow:0 1px 2px rgba(16,24,40,.06),0 5px 18px rgba(16,24,40,.04)}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.48 Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .shell{min-height:100vh;display:grid;grid-template-columns:248px 1fr}
+    .sidebar{background:var(--nav);color:#cbd5e1;padding:24px 17px;position:relative}
+    .brand{color:#fff;font-size:17px;font-weight:750;padding:0 10px 25px}
+    .brand small{display:block;color:#90a1bb;font-size:11px;font-weight:500;margin-top:3px}
+    .nav-label{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:#71829b;margin:19px 10px 7px}
+    .nav-btn{width:100%;border:0;text-align:left;color:#bcc7d9;background:transparent;padding:9px 11px;border-radius:7px;margin:2px 0;display:flex;align-items:center;gap:9px}
+    .nav-btn:hover,.nav-btn.active{background:#263751;color:#fff}
+    .nav-btn .count{margin-left:auto;color:#8da0bd}
+    .nav-icon{width:17px;text-align:center;color:#91a4c1;font-size:15px}
+    .sample{position:absolute;left:27px;bottom:22px;color:#7f91ab;font-size:11px}
+    .main{min-width:0}
+    .content{max-width:1250px;margin:0 auto;padding:29px 38px 60px}
+    .section-head{display:flex;justify-content:space-between;gap:16px;align-items:start}
+    .eyebrow{color:var(--blue);font-size:11px;font-weight:750;letter-spacing:.07em;text-transform:uppercase}
+    h1{font-size:29px;line-height:1.2;margin:5px 0 9px}
+    h2{font-size:18px;margin:0 0 8px}
+    h3{font-size:14px;margin:0 0 6px}
+    .lede{max-width:780px;color:var(--muted);margin:0 0 22px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;box-shadow:var(--shadow)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+    .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid.main-aside{grid-template-columns:minmax(0,1.6fr) minmax(300px,.7fr)}
+    .label{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:#748196;font-weight:750}
+    .value{font-weight:700;margin-top:4px}
+    .muted{color:var(--muted)}
+    .source{color:#6b7280;font-size:11px;margin-top:4px}
+    .pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 7px;border-radius:99px;background:var(--green2);color:var(--green)}
+    .pill.blue{background:var(--blue2);color:var(--blue)}
+    .pill.amber{background:var(--amber2);color:var(--amber)}
+    .row{display:flex;justify-content:space-between;gap:18px;padding:12px 0;border-bottom:1px solid #edf0f3}
+    .row:last-child{border-bottom:0}
+    .row>span:last-child{text-align:right}
+    .btn{border:1px solid #cad3df;background:#fff;color:var(--ink);padding:9px 13px;border-radius:7px;font-weight:650}
+    .btn:hover{background:#f7f9fc}
+    .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+    .btn.quiet{border-color:transparent;color:var(--blue);background:transparent}
+    .actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:24px}
+    .right-actions{display:flex;gap:9px;flex-wrap:wrap}
+    .crumb{font-size:12px;margin-bottom:16px}
+    .fact{padding:13px;border:1px solid var(--line);border-radius:8px;background:#fff}
+    .fact.changed{border-color:#c4b5fd;background:#faf8ff}
+    .app-card{padding:0;overflow:hidden}
+    .app-list-card{padding:0;overflow:hidden}
+    .app-list-head{padding:13px 15px 9px;display:flex;justify-content:space-between;gap:13px;align-items:start}
+    .app-list-body{padding:0 15px 9px}
+    .compact-summary{display:flex;gap:8px 18px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+    .compact-summary b{color:var(--ink)}
+    .expanded-details{padding:4px 15px 12px;border-top:1px solid #edf0f3}
+    .text-action{border:0;background:transparent;color:var(--blue);font-weight:700;padding:0;text-align:left}
+    .text-action:hover{text-decoration:underline}
+    .tiny-edit{font-size:11px;margin-left:7px;font-weight:700}
+    .card-actions{padding:9px 15px;border-top:1px solid var(--line);display:flex;gap:18px}
+    .inventory-tools{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:16px 0}
+    .search-box{min-width:320px;max-width:470px;width:100%;border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:10px 12px}
+    .pagination{display:flex;align-items:center;gap:5px;margin-top:14px}
+    .pagination button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 9px}
+    .pagination button.active{background:var(--nav);color:#fff;border-color:var(--nav)}
+    .pagination button:disabled{color:#a4adba;background:#f1f3f6}
+    .activity-section{margin-top:42px;padding-top:30px;border-top:1px solid var(--line)}
+    .change-table-wrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:10px}
+    .activity-table{width:100%;border-collapse:collapse}
+    .activity-table th{text-align:left;color:#748196;font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:10px;border-bottom:1px solid var(--line);background:#fbfcfd}
+    .activity-table td{padding:13px 10px;border-bottom:1px solid #edf0f3;vertical-align:top}
+    .activity-table tr:last-child td{border-bottom:0}
+    .nowrap{white-space:nowrap}
+    .tabs{display:flex;gap:3px;padding:0 16px;border-bottom:1px solid var(--line);overflow:auto}
+    .tabs button{border:0;background:transparent;color:#667085;padding:12px 10px;border-bottom:2px solid transparent;white-space:nowrap}
+    .tabs button.active{border-color:var(--blue);color:var(--blue);font-weight:700}
+    .app-body{padding:18px}
+    .environment-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+    .environment-card{border:1px solid var(--line);border-radius:8px;padding:13px}
+    .environment-card.pending{border-style:dashed;background:#fbfcfd}
+    .timeline{display:grid;gap:0}
+    .timeline-item{padding:11px 0 11px 17px;border-left:2px solid #d6deea;position:relative}
+    .timeline-item:before{content:'';position:absolute;width:8px;height:8px;border-radius:50%;background:var(--blue);left:-5px;top:17px}
+    .agent-note{border-left:4px solid var(--purple);background:#f8f5ff}
+    .agent-note .eyebrow{color:var(--purple)}
+    .pattern{border-left:4px solid var(--blue)}
+    .component{display:grid;grid-template-columns:160px 1fr auto;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid #edf0f3}
+    .component:last-child{border-bottom:0}
+    .why{font-size:12px;color:var(--muted)}
+    .policy{font-size:11px;color:#57657a;background:#f0f3f7;border-radius:5px;padding:3px 6px;white-space:nowrap}
+    .code{font:12px/1.65 ui-monospace,SFMono-Regular,monospace;background:#101828;color:#d9e4f5;padding:15px;border-radius:8px;white-space:pre-wrap}
+    .check{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #edf0f3}
+    .check:last-child{border-bottom:0}
+    .checkmark{width:20px;height:20px;border-radius:50%;background:var(--green2);color:var(--green);display:grid;place-items:center;font-weight:900;flex:0 0 auto}
+    .success{max-width:800px;margin:20px auto;text-align:center;padding:38px}
+    .success-icon{width:50px;height:50px;margin:0 auto 13px;border-radius:50%;background:var(--green2);color:var(--green);font-size:28px;display:grid;place-items:center}
+    .shallow{max-width:800px}
+    .empty-icon{font-size:30px;margin-bottom:9px}
+    .hidden{display:none!important}
+    .ask-fab{position:fixed;right:24px;bottom:22px;z-index:18;width:48px;height:48px;border:1px solid #314057;border-radius:50%;background:var(--nav);color:#fff;display:grid;place-items:center;box-shadow:0 13px 32px #10182866,0 4px 10px #1018283d}
+    .ask-fab:hover{background:var(--nav2)}
+    .ask-fab svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .chat-drawer{position:fixed;right:0;top:0;bottom:0;width:min(410px,100vw);background:#fff;z-index:30;box-shadow:-16px 0 45px #1018282b;display:flex;flex-direction:column}
+    .chat-head{padding:17px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:start}
+    .chat-body{padding:18px;overflow:auto;flex:1;min-height:0}
+    .chat-context{background:#f4f7fb;border:1px solid var(--line);border-radius:8px;padding:11px;margin-bottom:16px}
+    .chat-thread{display:grid;gap:10px}
+    .assistant-message{background:#e9edf3;border:1px solid #d0d5dd;border-left:3px solid #98a2b3;padding:11px 12px;border-radius:8px;margin-right:20px}
+    .assistant-message .label{color:#667085!important}
+    .user-message{background:#0f766e;color:#fff;padding:10px 12px;border-radius:8px 8px 2px 8px;margin-left:42px}
+    .chat-prompts{display:grid;gap:7px}
+    .chat-prompts button{border:1px solid var(--line);background:#fff;text-align:left;padding:9px 10px;border-radius:7px;color:var(--ink)}
+    .chat-prompts button:hover{border-color:#9db7e8;background:#f7f9ff}
+    .chat-prompts button.primary-prompt{background:var(--blue);border-color:var(--blue);color:#fff}
+    .chat-bottom{height:1px}
+    .chat-composer{border-top:1px solid var(--line);padding:12px;display:flex;gap:8px}
+    .chat-composer input{min-width:0;flex:1;border:1px solid #cbd5e1;border-radius:7px;padding:9px}
+    #sendChat{background:var(--nav);border-color:var(--nav);color:#fff}
+    #sendChat:hover{background:var(--nav2)}
+    .connection-card{padding:0;overflow:hidden}
+    .connection-head{padding:17px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:15px}
+    .connection-body{padding:16px 18px}
+    .scope-list{display:grid;gap:8px;margin-top:13px}
+    .scope-item{display:flex;gap:9px;align-items:start}
+    .scope-dot{width:18px;height:18px;border-radius:50%;background:var(--green2);color:var(--green);display:grid;place-items:center;font-size:11px;font-weight:900;flex:0 0 auto}
+    .setup-code{font:12px/1.55 ui-monospace,SFMono-Regular,monospace;background:#101828;color:#dbe7f8;padding:12px;border-radius:7px;overflow:auto;white-space:pre}
+    .setup-notice{padding:11px;border-radius:7px;background:var(--green2);color:var(--green);margin-top:12px}
+    button:focus,input:focus,select:focus,textarea:focus{outline:3px solid #b9d1ff;outline-offset:2px}
+    @media(max-width:820px){.shell{display:block}.sidebar{display:none}.content{padding:22px 16px 50px}.section-head{display:block}.grid,.grid.three,.grid.main-aside,.environment-grid{grid-template-columns:1fr}.component{grid-template-columns:1fr}.policy{width:max-content}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">Compass<small>Developer portal</small></div>
+      <div class="nav-label">Build & run</div>
+      <button class="nav-btn active" data-destination="applications"><span class="nav-icon" aria-hidden="true">▦</span>Applications</button>
+      <button class="nav-btn" data-destination="deploy"><span class="nav-icon" aria-hidden="true">↑</span>Deploy</button>
+      <button class="nav-btn" data-destination="changes"><span class="nav-icon" aria-hidden="true">≡</span>Changes <span class="count">3</span></button>
+      <div class="nav-label">Platform</div>
+      <button class="nav-btn" data-destination="patterns"><span class="nav-icon" aria-hidden="true">◆</span>Approved patterns</button>
+      <button class="nav-btn" data-destination="standards"><span class="nav-icon" aria-hidden="true">✓</span>Standards</button>
+      <button class="nav-btn" data-destination="connect"><span class="nav-icon" aria-hidden="true">⌘</span>Connect tools</button>
+      <button class="nav-btn" data-destination="help"><span class="nav-icon" aria-hidden="true">?</span>Get help</button>
+      <div class="sample">Concept prototype · Sample data</div>
+    </aside>
+    <div class="main">
+      <main class="content" id="content"></main>
+    </div>
+  </div>
+
+  <button class="ask-fab" id="askCompass" aria-label="Ask Compass" title="Ask Compass"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.4 8.4 0 0 1-3.5-.8L4 20l1.4-4A7.2 7.2 0 0 1 4 11.5 7.5 7.5 0 0 1 12 4a7.5 7.5 0 0 1 8 7.5Z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></svg><span class="sr-only">Ask Compass</span></button>
+
+  <aside class="chat-drawer hidden" id="chatDrawer" aria-label="Compass assistant">
+    <div class="chat-head">
+      <div><div class="eyebrow">Contextual assistant</div><h2 style="margin:2px 0 0">Ask Compass</h2></div>
+      <button class="btn" id="closeChat">Close</button>
+    </div>
+    <div class="chat-body">
+      <div class="chat-context" id="chatContext"></div>
+      <div class="chat-thread" id="chatThread"></div>
+      <div class="label" id="chatPromptLabel" style="margin:17px 0 8px">Things you can ask Compass to do</div>
+      <div class="chat-prompts" id="chatPrompts"></div>
+      <div class="chat-bottom" id="chatBottom" aria-hidden="true"></div>
+    </div>
+    <div class="chat-composer">
+      <input id="chatInput" aria-label="Message Compass" placeholder="Ask about this application...">
+      <button class="btn primary" id="sendChat">Send</button>
+    </div>
+  </aside>
+
+  <aside class="chat-drawer hidden" id="serviceDrawer" aria-label="Action drawer">
+    <div class="chat-head">
+      <div><div class="eyebrow">Portal action</div><h2 id="serviceDrawerTitle" style="margin:2px 0 0">Action</h2></div>
+      <button class="btn" id="closeServiceDrawer">Close</button>
+    </div>
+    <div class="chat-body" id="serviceDrawerBody"></div>
+  </aside>
+
+  <script>
+    const state={view:'workspace',selectedService:'checkout-api',traffic:'',data:'',availability:'99.9%',region:'us-east-1',capacity:'Standard',changed:false,pattern:'standard',tuning:false,customVariation:false,customReason:'',validated:false,pr:false,agentInstalled:false,ideConnected:false,tokenDraft:false,deployStep:0,deploymentConversationComplete:false};
+    const content=document.getElementById('content');
+
+    const applicationCatalog={
+      'checkout-api':{kind:'Customer-facing API',description:'Customer checkout and payment orchestration',lifecycle:'Pre-production',lifecycleClass:'amber',serviceOwner:'Commerce Platform',ownerEmail:'commerce-platform@company.com',team:'Your team',infraOwner:'Cloud Platform',infraEmail:'cloud-platform@company.com',environments:'Development · Staging',repo:'github.company.com/commerce/checkout-api',activity:'Last deployed to staging 2h ago'},
+      'catalog-web':{kind:'Internal web application',description:'Merchandising and product catalog workspace',lifecycle:'Production',lifecycleClass:'',serviceOwner:'Commerce Platform',ownerEmail:'commerce-platform@company.com',team:'Your team',infraOwner:'Commerce Platform',infraEmail:'commerce-platform@company.com',environments:'Development · Production',repo:'github.company.com/commerce/catalog-web',activity:'Healthy · no open changes'},
+      'payments-worker':{kind:'Background worker',description:'Payment settlement and reconciliation jobs',lifecycle:'Production',lifecycleClass:'',serviceOwner:'Payments',ownerEmail:'payments-platform@company.com',team:'Contributing team',infraOwner:'Cloud Platform',infraEmail:'cloud-platform@company.com',environments:'Staging · Production',repo:'github.company.com/payments/payments-worker',activity:'Policy update awaiting review'},
+      'inventory-sync':{kind:'Event consumer',description:'Synchronizes sellable inventory between systems',lifecycle:'Pre-production',lifecycleClass:'amber',serviceOwner:'Supply Chain',ownerEmail:'supply-chain-eng@company.com',team:'Infrastructure dependency',infraOwner:'Data Platform',infraEmail:'data-platform@company.com',environments:'Development · Staging',repo:'github.company.com/supply/inventory-sync',activity:'Staging deployment failed yesterday'}
+    };
+
+    const infrastructureChanges=[
+      {service:'catalog-web',title:'Increase production memory',status:'Complete',statusClass:'',updated:'18 min ago',actor:'Merged by Maya Chen',note:'Capacity alert resolved after yesterday evening traffic increase.',owner:'Commerce Platform',ownerEmail:'commerce-platform@company.com'},
+      {service:'checkout-worker',title:'Add queue dead-letter policy',status:'Awaiting review',statusClass:'amber',updated:'1 hr ago',actor:'Submitted by Noah Williams',note:'Security review requested before the production queue policy can merge.',owner:'Cloud Security',ownerEmail:'cloud-security@company.com'},
+      {service:'checkout-api',title:'Production infrastructure foundation',status:'Needs input',statusClass:'blue',updated:'Yesterday',actor:'Draft started by Maya Chen',note:'Infrastructure determination has not been completed yet.',owner:'Commerce Platform',ownerEmail:'commerce-platform@company.com'},
+      {service:'inventory-sync',title:'Update log retention',status:'Checks running',statusClass:'blue',updated:'2 days ago',actor:'Updated by Priya Singh',note:'Policy evidence regenerated for the Data Platform retention standard.',owner:'Data Platform',ownerEmail:'data-platform@company.com'}
+    ];
+
+    const deploymentTurns=[
+      {key:'traffic',question:'For checkout-api, production traffic controls the initial autoscaling range. What shape should I assume?',suggestions:['Steady','Spiky around events','Not sure']},
+      {key:'data',question:'Does checkout-api process confidential customer data? This changes database, identity, and network controls.',suggestions:['Yes','No','I need help deciding']},
+      {key:'decision',question:'I have enough context to use the approved infrastructure foundation. What should I do next?',suggestions:['Use approved foundation','Use default sizing','Show me the proposal']}
+    ];
+
+    function escapeHTML(value){const entities={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};return String(value).replace(/[&<>"']/g,char=>entities[char])}
+    function crumb(items){return `<div class="muted crumb">${items.join(' &nbsp;/&nbsp; ')}</div>`}
+    function setTop(){}
+    function activateNav(destination){document.querySelectorAll('.nav-btn').forEach(button=>button.classList.toggle('active',button.dataset.destination===destination))}
+    function show(view){state.view=view;render();window.scrollTo(0,0)}
+    function choose(key,value){state[key]=value;render()}
+    function updateTuning(key,value){state[key]=value;state.changed=true;renderProposal()}
+    function toggleTuning(){state.tuning=!state.tuning;state.customVariation=false;renderProposal()}
+    function toggleCustomVariation(){state.customVariation=!state.customVariation;state.tuning=false;renderProposal()}
+    function submitCustomVariation(){
+      const reason=document.getElementById('customVariationReason').value.trim();
+      if(!reason){document.getElementById('customVariationReason').focus();return}
+      state.customReason=reason;
+      alert('Mock action: a platform review request would be created with the deployment context and your requested variation.');
+    }
+    function closeDrawers(){document.getElementById('chatDrawer').classList.add('hidden');document.getElementById('serviceDrawer').classList.add('hidden')}
+    function closeChatDrawer(){
+      document.getElementById('chatDrawer').classList.add('hidden');
+      if(state.view==='prepare'&&state.deploymentConversationComplete)renderPrepare();
+    }
+
+    function render(){
+      if(state.view==='workspace')return renderApplications();
+      if(state.view==='service')return renderServiceOverview();
+      if(state.view==='prepare')return renderPrepare();
+      if(state.view==='proposal')return renderProposal();
+      if(state.view==='review')return renderReview();
+      if(state.view==='connect')return renderConnectTools();
+      return renderApplications();
+    }
+
+    function renderApplications(){
+      activateNav('applications');
+      setTop('Applications');
+      const appCards=Object.entries(applicationCatalog).map(([id,a])=>`
+        <article class="card app-list-card">
+          <div class="app-list-head">
+            <div><div class="label">${a.kind}</div><h2 style="margin-top:4px">${id}</h2></div>
+            <span class="pill ${a.lifecycleClass}">${a.lifecycle}</span>
+          </div>
+          <div class="app-list-body">
+            <div class="compact-summary">
+              <span>Service owner · <b>${a.serviceOwner}</b></span>
+              <span>Email · <b>${a.ownerEmail}</b></span>
+              <span>Infra owner · <b>${a.infraOwner}</b></span>
+            </div>
+          </div>
+          <div class="expanded-details ${id==='checkout-api'?'':'hidden'}" id="app-details-${id}">
+            <p class="muted">${a.description}</p>
+            <div class="row"><span>Current environments</span><span>${a.environments}</span></div>
+            <div class="row"><span>GitHub repository</span><span><button class="text-action" onclick="alert('Mock link: opens ${id} in GitHub.')">${a.repo} ↗</button></span></div>
+            <div class="row"><span>Service owner email</span><span>${a.ownerEmail}</span></div>
+            <div class="row"><span>Infrastructure contact</span><span>${a.infraEmail}</span></div>
+            <div class="row"><span>Latest activity</span><span>${a.activity}</span></div>
+            ${id==='checkout-api'?'<div class="right-actions" style="margin-top:12px"><button class="btn" onclick="document.getElementById(\'serviceDrawer\').classList.add(\'hidden\');show(\'service\')">Open service workspace</button><button class="btn primary" onclick="startDeploymentConversation()">Determine infrastructure</button></div>':''}
+          </div>
+          <div class="card-actions"><button class="text-action" onclick="toggleInlineDetails('app-details-${id}',this)">${id==='checkout-api'?'Hide details ↑':'View details →'}</button></div>
+        </article>`).join('');
+      const changeRows=infrastructureChanges.map(c=>`
+        <tr>
+          <td><b>${c.service}</b></td>
+          <td><b>${c.title}</b><br><small class="muted">${c.note}</small></td>
+          <td>${c.actor}</td>
+          <td class="nowrap">${c.updated}</td>
+          <td><span class="pill ${c.statusClass}">${c.status}</span></td>
+          <td>${c.owner}<br><small class="muted">${c.ownerEmail}</small></td>
+        </tr>`).join('');
+      content.innerHTML=`
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Signed in as Maya Chen · Commerce Platform</div>
+            <h1>Your applications</h1>
+            <p class="lede">Services appear here because your team owns, contributes to, or operates part of them. Ownership and lifecycle remain separate.</p>
+          </div>
+          <button class="btn primary" onclick="openAddService()">Add service</button>
+        </div>
+        <div class="inventory-tools">
+          <input class="search-box" type="search" aria-label="Search applications" placeholder="Search services, repositories, owners, or emails">
+          <span class="muted nowrap">12 applications</span>
+        </div>
+        <div class="grid">${appCards}</div>
+        <div class="actions">
+          <span class="muted">Showing 1-4 of 12</span>
+          <nav class="pagination" aria-label="Application pages"><button disabled>Previous</button><button class="active">1</button><button onclick="alert('Pagination is illustrative in this prototype.')">2</button><button onclick="alert('Pagination is illustrative in this prototype.')">3</button><button onclick="alert('Pagination is illustrative in this prototype.')">Next</button></nav>
+        </div>
+        <section class="activity-section">
+          <div class="eyebrow">Operational activity</div>
+          <h1 style="font-size:23px">Recent infrastructure changes</h1>
+          <p class="lede">Track changes affecting services connected to your team, including who acted and who owns the next step.</p>
+          <div class="inventory-tools">
+            <input class="search-box" type="search" aria-label="Search infrastructure changes" placeholder="Search changes, services, actors, owners, or emails">
+            <span class="muted nowrap">9 changes</span>
+          </div>
+          <div class="change-table-wrap">
+            <table class="activity-table">
+              <thead><tr><th>Service</th><th>Change</th><th>Action</th><th>Updated</th><th>Status</th><th>Next-step owner</th></tr></thead>
+              <tbody>${changeRows}</tbody>
+            </table>
+          </div>
+          <div class="actions">
+            <span class="muted">Showing 1-4 of 9</span>
+            <nav class="pagination" aria-label="Infrastructure change pages"><button disabled>Previous</button><button class="active">1</button><button onclick="alert('Pagination is illustrative in this prototype.')">2</button><button onclick="alert('Pagination is illustrative in this prototype.')">3</button><button onclick="alert('Pagination is illustrative in this prototype.')">Next</button></nav>
+          </div>
+        </section>`;
+    }
+
+    function renderServiceOverview(){
+      activateNav('applications');
+      setTop('checkout-api','Service owner: commerce-platform@company.com');
+      content.innerHTML=crumb(['Applications','checkout-api','Overview'])+`
+        <div class="card app-card">
+          <div class="tabs">
+            <button class="active">Overview</button>
+            <button onclick="show('prepare')">Deploy</button>
+            <button disabled>Interfaces</button>
+            <button disabled>Dependencies</button>
+            <button disabled>Observe</button>
+            <button disabled>Activity</button>
+          </div>
+          <div class="app-body">
+            <div class="grid main-aside">
+              <main>
+                <section>
+                  <div class="label">Environments</div>
+                  <h2 style="margin-top:4px">Where this service runs</h2>
+                  <div class="environment-grid">
+                    <div class="environment-card"><div class="row"><b>Development</b><span class="pill">Healthy</span></div><div class="value">v1.19.0-dev.14</div><div class="source">Deployed 36 min ago · us-east-1</div></div>
+                    <div class="environment-card"><div class="row"><b>Staging</b><span class="pill">Healthy</span></div><div class="value">v1.19.0-rc.2</div><div class="source">Deployed 2 hr ago · us-east-1</div></div>
+                    <div class="environment-card pending"><div class="row"><b>Production</b><span class="pill amber">Not provisioned</span></div><div class="muted">Infrastructure proposal not yet created.</div><button class="text-action" style="margin-top:10px" onclick="startDeploymentConversation()">Determine infrastructure →</button></div>
+                  </div>
+                </section>
+                <section class="grid" style="margin-top:16px">
+                  <div class="card" style="box-shadow:none"><div class="label">Interfaces</div><h3 style="margin-top:5px">REST API · internal</h3><div class="row"><span>Base path</span><span>/v1/checkout</span></div><div class="row"><span>Authentication</span><span>Service identity</span></div></div>
+                  <div class="card" style="box-shadow:none"><div class="label">Dependencies</div><h3 style="margin-top:5px">Three detected</h3><div class="row"><span>Data</span><span>PostgreSQL</span></div><div class="row"><span>External API</span><span>Stripe</span></div></div>
+                </section>
+                <section class="card" style="margin-top:16px;box-shadow:none"><div class="label">Operational readiness</div><h2 style="margin-top:5px">Staging signals</h2><div class="grid three"><div><div class="value">99.96%</div><div class="muted">Availability · 7 days</div></div><div><div class="value">184 ms</div><div class="muted">p95 latency</div></div><div><div class="value">0 open</div><div class="muted">Critical alerts</div></div></div></section>
+              </main>
+              <aside>
+                <section class="card" style="box-shadow:none">
+                  <div class="label">Ownership</div>
+                  <h2 style="margin-top:5px">Teams and contacts</h2>
+                  <div class="row"><span>Service owner</span><span><b>Commerce Platform</b><br><small class="muted">commerce-platform@company.com</small></span></div>
+                  <div class="row"><span>Infrastructure operated by</span><span>Cloud Platform<br><small class="muted">cloud-platform@company.com</small></span></div>
+                  <div class="row"><span>On-call</span><span>commerce-primary</span></div>
+                  <div class="row"><span>Repository</span><span><button class="text-action" onclick="alert('Mock GitHub link')">commerce/checkout-api ↗</button></span></div>
+                </section>
+                <section class="card" style="margin-top:14px;box-shadow:none">
+                  <div class="label">Recent activity</div>
+                  <div class="timeline"><div class="timeline-item"><b>Staging deployed</b><div class="muted">Maya Chen · 2 hr ago</div></div><div class="timeline-item"><b>Policy evidence refreshed</b><div class="muted">Compass · yesterday</div></div><div class="timeline-item"><b>Production draft started</b><div class="muted">Maya Chen · yesterday</div></div></div>
+                </section>
+              </aside>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderPrepare(){
+      activateNav('deploy');
+      setTop('checkout-api','Determine production infrastructure');
+      const hasDetermined=state.traffic&&state.data;
+      content.innerHTML=crumb(['Applications','checkout-api','Deploy'])+`
+        <div class="eyebrow">Production deployment</div>
+        <h1>Determine infrastructure</h1>
+        <p class="lede">Compass uses repository, environment, ownership, and platform catalog context first. Anything it cannot infer is handled in the side conversation.</p>
+        <div class="grid main-aside">
+          <main>
+            <div class="grid">
+              <div class="fact"><div class="label">Resource</div><div class="value">checkout-api</div><div class="source">commerce/checkout-api · main</div></div>
+              <div class="fact"><div class="label">Workload</div><div class="value">Stateless HTTP API</div><div class="source">Dockerfile · server entrypoint · 96% confidence</div></div>
+              <div class="fact"><div class="label">Runtime</div><div class="value">Node.js 20</div><div class="source">package.json · Dockerfile · 99% confidence</div></div>
+              <div class="fact"><div class="label">Database dependency</div><div class="value">PostgreSQL</div><div class="source">Application client and migrations · 97% confidence</div></div>
+              <div class="fact ${state.changed?'changed':''}"><div class="label">Availability target</div><div class="value">${state.availability}</div><div class="source">${state.changed?'Changed by developer':'Commerce Platform default'}</div><button class="btn quiet" onclick="state.changed=true;state.availability='99.95%';render()">Edit</button></div>
+              <div class="fact"><div class="label">Contacts</div><div class="value">Commerce Platform</div><div class="source">commerce-platform@company.com · cloud-platform@company.com</div></div>
+            </div>
+            <section class="card" style="margin-top:16px">
+              <div class="row"><span>Status</span><span><span class="pill ${hasDetermined?'':'blue'}">${hasDetermined?'Ready for proposal':'Needs AI interview'}</span></span></div>
+              <div class="row"><span>Traffic answer</span><span>${state.traffic||'Not collected yet'}</span></div>
+              <div class="row"><span>Data sensitivity</span><span>${state.data||'Not collected yet'}</span></div>
+              <button class="btn primary" style="margin-top:14px" onclick="startDeploymentConversation()">Determine infrastructure</button>
+            </section>
+          </main>
+          <aside class="card agent-note">
+            <div class="eyebrow">How this works</div>
+            <p class="muted">The page shows the deterministic context Compass already has. The drawer handles the small mock conversation and then opens the infrastructure proposal.</p>
+            <h3>Developer control</h3>
+            <p class="muted">Recommended infrastructure can be edited before review, and GitHub remains the place where the real pull request is approved and merged.</p>
+          </aside>
+        </div>
+        <div class="actions"><button class="btn" onclick="show('service')">← Service overview</button>${hasDetermined?'<button class="btn primary" onclick="show(\'proposal\')">Open proposal →</button>':''}</div>`;
+    }
+
+    function renderProposal(){
+      activateNav('deploy');
+      setTop('checkout-api','Infrastructure proposal');
+      const traffic=state.traffic||'Steady';
+      const confidential=state.data||'Yes';
+      const patternItems=[
+        {name:'Compute',system:'Managed container service',why:`Stateless Node.js API; ${traffic} traffic`,policy:'PLAT-001'},
+        {name:'Database',system:'Multi-AZ managed PostgreSQL',why:`${confidential} confidential data; ${state.availability} availability`,policy:'DATA-012'},
+        {name:'Network',system:'API gateway + private data plane',why:'Public API with no public database access',policy:'NET-019'},
+        {name:'Identity',system:'Workload identity',why:'No long-lived cloud credentials',policy:'IAM-007'},
+        {name:'Operations',system:'Standard telemetry + SLO',why:'OpenTelemetry already detected',policy:'OBS-003'}
+      ];
+      const rows=patternItems.map(item=>`
+        <div class="component">
+          <div><b>${item.name}</b><button class="text-action tiny-edit" onclick="alert('Mock edit: change ${item.name.toLowerCase()} recommendation.')">Edit</button><br><span class="muted">${item.system}</span></div>
+          <div class="why">${item.why}</div>
+          <span class="policy">${item.policy}</span>
+        </div>`).join('');
+      content.innerHTML=crumb(['Applications','checkout-api','Proposal'])+`
+        <div class="eyebrow">Proposed production deployment</div>
+        <h1>Approved container API foundation</h1>
+        <p class="lede">The proposal translates service context and the mock conversation into components the platform team already supports.</p>
+        <div class="grid main-aside">
+          <section class="card pattern">
+            <div class="row"><div><div class="label">Recommended pattern</div><h2>Managed container service + PostgreSQL</h2></div><span class="pill blue">Approved path</span></div>
+            ${rows}
+            <div class="row"><b>Estimated cost class</b><span>Medium · validate after traffic sizing</span></div>
+          </section>
+          <aside>
+            <div class="card">
+              <div class="label">Decision</div>
+              <h2>Approved path selected</h2>
+              <p class="muted">Start with the platform default, adjust supported settings, or request platform review when the approved path cannot express the requirement.</p>
+              <div class="right-actions"><button class="btn primary" onclick="choose('pattern','standard')">Use approved path</button><button class="btn" onclick="toggleTuning()">Tune within guardrails</button><button class="btn" onclick="toggleCustomVariation()">Request variation</button></div>
+            </div>
+            ${state.tuning?`<div class="card" style="margin-top:14px"><div class="label">Supported tuning</div><h3>Adjust approved settings</h3><p class="muted">These changes remain on the approved path and will be revalidated before GitHub handoff.</p><label class="label" for="availabilityTuning">Availability tier</label><select id="availabilityTuning" style="width:100%;margin:5px 0 12px;padding:8px" onchange="updateTuning('availability',this.value)"><option ${state.availability==='99.9%'?'selected':''}>99.9%</option><option ${state.availability==='99.95%'?'selected':''}>99.95%</option></select><label class="label" for="regionTuning">Allowed region</label><select id="regionTuning" style="width:100%;margin:5px 0 12px;padding:8px" onchange="updateTuning('region',this.value)"><option ${state.region==='us-east-1'?'selected':''}>us-east-1</option><option ${state.region==='us-west-2'?'selected':''}>us-west-2</option></select><label class="label" for="capacityTuning">Capacity tier</label><select id="capacityTuning" style="width:100%;margin:5px 0 4px;padding:8px" onchange="updateTuning('capacity',this.value)"><option ${state.capacity==='Standard'?'selected':''}>Standard</option><option ${state.capacity==='Higher peak capacity'?'selected':''}>Higher peak capacity</option></select></div>`:''}
+            ${state.customVariation?`<div class="card" style="margin-top:14px"><div class="label">Custom variation</div><h3>Describe what the approved path cannot express</h3><p class="muted">Compass will attach your confirmed service context and this rationale to a platform review request. It will not generate ungoverned infrastructure.</p><label class="label" for="customVariationReason">Required outcome and rationale</label><textarea id="customVariationReason" rows="4" style="width:100%;margin-top:5px;padding:8px" placeholder="For example: data residency requires a region not offered by this path.">${escapeHTML(state.customReason)}</textarea><button class="btn primary" style="margin-top:10px" onclick="submitCustomVariation()">Request platform review</button></div>`:''}
+            <div class="card agent-note" style="margin-top:14px"><div class="eyebrow">Why this?</div><p class="muted">The recommendation is bounded by confirmed service facts and the approved catalog. Policy checks still run independently.</p></div>
+          </aside>
+        </div>
+        <div class="actions"><button class="btn" onclick="show('prepare')">← Change context</button><button class="btn primary" onclick="${state.customReason?"alert('Your custom variation is with Platform review. The approved-path PR flow remains paused.')":"show('review')"}">${state.customReason?'Platform review requested':'Review proposed change →'}</button></div>`;
+    }
+
+    function renderReview(){
+      activateNav('deploy');
+      setTop('checkout-api','Pre-PR review');
+      if(state.pr)return renderSuccess();
+      content.innerHTML=crumb(['Applications','checkout-api','Review'])+`
+        <div class="eyebrow">Pre-PR deployment review</div>
+        <h1>Review the infrastructure change before GitHub</h1>
+        <p class="lede">Compass prepares the proposal here. GitHub remains the system for the actual diff, CI checks, comments, approvals, and merge.</p>
+        <div class="grid main-aside">
+          <section>
+            <div class="card">
+              <div class="label">Plain-language change</div>
+              <h2>Give checkout-api a production-ready runtime and private database</h2>
+              <p class="muted">Creates a managed container service, encrypted PostgreSQL database, API gateway, workload identity, and standard telemetry in ${state.region}.</p>
+              <div class="row"><b>Approved modules</b><span>service-api v4.8 · postgres v3.2 · telemetry v2.1</span></div>
+              <div class="row"><b>Required reviewer</b><span>Commerce Platform owner<br><small class="muted">commerce-platform@company.com</small></span></div>
+              <div class="row"><b>Developer change</b><span>${state.changed?`Availability ${state.availability} · ${state.region} · ${state.capacity}`:'No changes to inferred requirements'}</span></div>
+              ${state.customReason?`<div class="row"><b>Custom variation</b><span class="pill amber">Platform review requested</span></div>`:''}
+              <div class="row"><b>Warning</b><span class="pill amber">Confirm traffic estimate before merge</span></div>
+              <h3 style="margin-top:17px">Simplified Terraform plan</h3>
+              <div class="code">+ module.checkout_api_service
++ module.checkout_api_postgres
++ module.checkout_api_observability
+~ github/workflows/deploy-production.yml</div>
+            </div>
+          </section>
+          <aside>
+            <div class="card">
+              <div class="label">Deterministic policy checks</div>
+              <h2>Authoritative validation</h2>
+              <p class="muted">These checks come from the policy system. Compass cannot waive or override them.</p>
+              <div class="check"><span class="checkmark">✓</span><div><b>SEC-012 · Encryption</b><div class="muted">Database encryption enabled</div></div></div>
+              <div class="check"><span class="checkmark">✓</span><div><b>IAM-007 · Least privilege</b><div class="muted">Workload identity configured</div></div></div>
+              <div class="check"><span class="checkmark">✓</span><div><b>NET-019 · Network boundary</b><div class="muted">Database has no public route</div></div></div>
+              <button class="btn ${state.validated?'':'primary'}" style="margin-top:13px;width:100%" onclick="state.validated=true;render()">${state.validated?'✓ Validation passed':'Run policy validation'}</button>
+            </div>
+          </aside>
+        </div>
+        <div class="actions"><button class="btn" onclick="show('proposal')">← Modify proposal</button><div class="right-actions"><button class="btn" onclick="alert('A context-rich platform help request would be created.')">Request platform help</button><button class="btn primary" onclick="${state.validated?'state.pr=true;render()':"alert('Run deterministic validation before creating the PR.')"}">Create infrastructure PR in GitHub →</button></div></div>`;
+    }
+
+    function renderSuccess(){
+      setTop('checkout-api','GitHub handoff');
+      content.innerHTML=crumb(['Applications','checkout-api','GitHub handoff'])+`
+        <section class="card success">
+          <div class="success-icon">✓</div>
+          <div class="eyebrow">GitHub handoff created</div>
+          <h1>Infrastructure PR #482 is ready for review</h1>
+          <p class="lede" style="margin-left:auto;margin-right:auto">The proposal has left Compass and entered the existing GitHub review and CI workflow. No infrastructure has been provisioned.</p>
+          <div class="grid" style="text-align:left;margin-top:25px">
+            <div class="card"><div class="label">GitHub status</div><h3>CI checks pending</h3><p class="muted">Terraform plan · policy evidence · module checks</p></div>
+            <div class="card"><div class="label">Required next action</div><h3>Commerce Platform review</h3><p class="muted">Reviewer confirms the traffic warning before merge.</p></div>
+          </div>
+          <div class="right-actions" style="justify-content:center;margin-top:24px"><button class="btn" onclick="state.pr=false;render()">Return to proposal</button><button class="btn primary" onclick="alert('Mock link: the real implementation would open GitHub PR #482.')">View PR #482 in GitHub ↗</button></div>
+        </section>`;
+    }
+
+    function renderConnectTools(){
+      activateNav('connect');
+      setTop('Connect tools','IDE, MCP, and integration setup');
+      content.innerHTML=crumb(['Platform','Connect tools'])+`
+        <div class="eyebrow">Developer setup</div>
+        <h1>Connect Compass to your tools</h1>
+        <p class="lede">Use the same application context and approved platform actions from your IDE, an MCP-compatible agent, or an approved custom integration.</p>
+        <section class="card" style="background:#102c59;color:white;margin-bottom:16px">
+          <div class="grid main-aside">
+            <div><div class="eyebrow" style="color:#bfd4ff">Recommended setup</div><h2 style="font-size:23px">Install the Compass developer agent</h2><p style="color:#d7e5ff">The local agent signs in with your organization account, detects the repository open in your IDE, and connects it to Compass through the supported tool interface. It does not contain cloud credentials.</p><button class="btn" onclick="state.agentInstalled=true;renderConnectTools()">${state.agentInstalled?'Developer agent installed ✓':'Install developer agent'}</button></div>
+            <aside><div class="label" style="color:#bfd4ff;margin-bottom:9px">Supported IDEs</div><div class="scope-list"><div class="scope-item"><span class="scope-dot">✓</span><b>Visual Studio Code</b></div><div class="scope-item"><span class="scope-dot">✓</span><b>Cursor</b></div><div class="scope-item"><span class="scope-dot">✓</span><b>JetBrains IDEs</b></div></div><p style="color:#d7e5ff;font-size:12px;margin-bottom:0">One agent installation can serve multiple supported editors on this device.</p></aside>
+          </div>
+        </section>
+        <div class="grid main-aside">
+          <div class="grid">
+            <section class="card connection-card"><div class="connection-head"><div><div class="label">Editor connections</div><h2 style="margin-top:5px">Connect an IDE</h2></div><span class="pill ${state.ideConnected?'':'blue'}">${state.ideConnected?'Connected':'Not connected'}</span></div><div class="connection-body"><p class="muted">Choose a supported editor after installing the developer agent. Organization sign-in is reused; no API key is copied into the editor.</p><div class="row"><span>Context shared</span><span>Current repository · application · team</span></div><div class="row"><span>Authentication</span><span>Enterprise OAuth</span></div><div class="right-actions" style="margin-top:14px"><button class="btn primary" onclick="state.ideConnected=true;renderConnectTools()">${state.ideConnected?'Reconnect VS Code':'Connect VS Code'}</button><button class="btn" onclick="state.ideConnected=true;renderConnectTools()">Connect Cursor</button><button class="btn" onclick="state.ideConnected=true;renderConnectTools()">Connect JetBrains</button></div>${state.ideConnected?'<div class="setup-notice">✓ IDE connected for Maya Chen</div>':''}</div></section>
+            <section class="card connection-card"><div class="connection-head"><div><div class="label">Agent tools</div><h2 style="margin-top:5px">MCP connection</h2></div><span class="pill">Available</span></div><div class="connection-body"><p class="muted">Add the Compass MCP server to an approved MCP-compatible client. Organization sign-in determines what applications and actions are available.</p><div class="setup-code">{
+  "mcpServers": {
+    "compass": {
+      "url": "https://mcp.company.dev/compass"
+    }
+  }
+}</div><div class="right-actions" style="margin-top:14px"><button class="btn" onclick="alert('Mock action: MCP configuration copied.')">Copy configuration</button><button class="btn quiet" onclick="addChatExchange('What can it do?','mcp');openCompass()">What can it do?</button></div></div></section>
+            <section class="card connection-card"><div class="connection-head"><div><div class="label">Custom integrations</div><h2 style="margin-top:5px">Scoped API tokens</h2></div><span class="pill amber">Advanced</span></div><div class="connection-body"><p class="muted">Create a revocable token for an approved script or service. Tokens are shown once and should not be used for normal IDE access.</p><div class="row"><span>Default expiration</span><span>30 days</span></div><div class="row"><span>Maximum scope</span><span>Read context · prepare proposals</span></div><button class="btn" style="margin-top:14px" onclick="state.tokenDraft=true;renderConnectTools()">Create scoped token</button>${state.tokenDraft?'<div class="setup-notice">Token setup drafted. Scope and expiration must be confirmed before creation; no credential was generated in this prototype.</div>':''}</div></section>
+          </div>
+          <aside><section class="card"><div class="label">Connected tools</div><h2>Your setup</h2><div class="row"><span>GitHub</span><span class="pill">Connected</span></div><div class="row"><span>VS Code</span><span class="pill ${state.ideConnected?'':'amber'}">${state.ideConnected?'Connected':'Not connected'}</span></div><div class="row"><span>JetBrains</span><span class="muted">Not connected</span></div><div class="row"><span>Compass CLI</span><span class="muted">Not installed</span></div></section><section class="card agent-note" style="margin-top:14px"><div class="eyebrow">IDE boundaries</div><div class="scope-list"><div class="scope-item"><span class="scope-dot">✓</span><span>Identify the current application and explain platform context</span></div><div class="scope-item"><span class="scope-dot">✓</span><span>Prepare a deployment proposal and open portal review</span></div><div class="scope-item"><span class="scope-dot">✓</span><span>Explain approved patterns and policy results</span></div><div class="scope-item"><span class="scope-dot">-</span><span>Cannot approve, merge, or provision infrastructure</span></div></div></section></aside>
+        </div>`;
+    }
+
+    function toggleInlineDetails(id,button){const details=document.getElementById(id);const opening=details.classList.contains('hidden');details.classList.toggle('hidden');button.textContent=opening?'Hide details ↑':'View details →'}
+
+    function openAddService(){
+      document.getElementById('chatDrawer').classList.add('hidden');
+      document.getElementById('serviceDrawerTitle').textContent='Add service';
+      document.getElementById('serviceDrawerBody').innerHTML=`
+        <p class="muted">New services start by connecting a repository and assigning owners. Compass can then detect runtime, dependencies, and environments.</p>
+        <label class="label" for="newRepo">Repository URL</label>
+        <input id="newRepo" class="search-box" style="min-width:0;margin:6px 0 13px" value="github.company.com/commerce/new-service">
+        <label class="label" for="newOwner">Service owner email</label>
+        <input id="newOwner" class="search-box" style="min-width:0;margin:6px 0 13px" value="commerce-platform@company.com">
+        <label class="label" for="newInfra">Infrastructure owner email</label>
+        <input id="newInfra" class="search-box" style="min-width:0;margin:6px 0 13px" value="cloud-platform@company.com">
+        <div class="right-actions" style="margin-top:14px"><button class="btn primary" onclick="document.getElementById('addServiceNotice').classList.remove('hidden')">Connect repository</button><button class="btn" onclick="document.getElementById('serviceDrawer').classList.add('hidden')">Cancel</button></div>
+        <div class="setup-notice hidden" id="addServiceNotice">Service draft created. Compass would scan the repository, suggest an owner record, and add it to this applications list after confirmation.</div>`;
+      document.getElementById('serviceDrawer').classList.remove('hidden');
+    }
+
+    function compassConfig(){
+      if(state.view==='connect')return {context:'Connect tools · Developer setup',prompts:[['mcp','What is the MCP connection for?'],['token','When would I need an API token?'],['permissions','What can Compass do from my IDE?']]};
+      if(state.view==='workspace')return {context:'Applications · Commerce Platform',prompts:[['why-listed','Why is checkout-api listed here?'],['ownership','Who owns and operates these applications?'],['add-service','How do I add a service?']]};
+      if(state.view==='service')return {context:'checkout-api · Service overview',prompts:[['known','What does Compass know about this service?'],['prod-ready','Why is it not in production yet?'],['ownership','Who owns the service and infrastructure?']]};
+      if(state.view==='prepare')return {context:'checkout-api · Determine infrastructure',prompts:[['start-deploy','Determine infrastructure for checkout-api'],['availability','What changes at 99.95% availability?'],['confidential','What does confidential data change?']]};
+      if(state.view==='proposal')return {context:'checkout-api · Infrastructure proposal',prompts:[['postgres','Why is PostgreSQL recommended?'],['tuning','What can I safely edit?'],['policy','Which policies shaped this proposal?']]};
+      if(state.view==='review')return {context:'checkout-api · Pre-PR review',prompts:[['reviewer','Why is Cloud Platform involved?'],['github','What happens after the PR is created?'],['help','Ask Platform for help']]};
+      return {context:'Compass developer portal',prompts:[['add-service','How do I add a service?'],['help','Ask Platform for help']]};
+    }
+
+    function askCompassQuestion(key){const answers={
+      'why-listed':'checkout-api appears because Commerce Platform is its service owner in the catalog and Maya is signed in as a member of that team. Repository and catalog records keep the association current.',
+      'ownership':'Service ownership and infrastructure operations are separate. Commerce Platform owns checkout-api at commerce-platform@company.com; Cloud Platform operates its production infrastructure at cloud-platform@company.com.',
+      'add-service':'Use Add service from the Applications page. The developer connects a repository, assigns service and infrastructure owner emails, and Compass scans for runtime, dependencies, and environment context.',
+      'known':'Compass found the Node.js runtime, container entrypoint, PostgreSQL dependency, current environments, ownership, and telemetry integration from approved repository and platform sources.',
+      'prod-ready':'checkout-api currently runs in development and staging. Production requires an infrastructure determination, an approved proposal, deterministic policy checks, and GitHub review.',
+      'start-deploy':'I can run the infrastructure-determination conversation from this drawer. Use the Determine infrastructure button to start the scripted flow.',
+      'availability':'A 99.95% target adds stronger redundancy and raises the expected cost class. Compass can propose the change, but you must apply it explicitly.',
+      'confidential':'Confidential data requires an encrypted managed database, private data-plane access, narrower identity permissions, and the applicable data policy evidence.',
+      'postgres':'The repository already contains a PostgreSQL client and migrations. The managed PostgreSQL module is the approved pattern for this availability and data classification.',
+      'tuning':'You can tune the approved settings shown in the proposal, such as availability tier, allowed region, and capacity tier. Larger deviations move into a platform review request.',
+      'policy':'PLAT-001 shaped runtime, DATA-012 encryption and availability, NET-019 network exposure, IAM-007 identity, and OBS-003 telemetry.',
+      'reviewer':'Cloud Platform operates the proposed production runtime, so it reviews the module and capacity change. Commerce Platform remains the service owner.',
+      'github':'Compass creates the infrastructure PR. GitHub then owns the real diff, CI checks, comments, approvals, and merge. Compass only summarizes that status.',
+      'mcp':'The MCP connection lets an approved IDE assistant read Compass application context and request bounded platform actions through a standard tool interface. It does not grant direct cloud access.',
+      'token':'Use a scoped API token only for an approved custom script or integration that cannot use enterprise sign-in. IDE connections should use organization sign-in instead of copied secrets.',
+      'permissions':'From the IDE, Compass can identify the current repository, explain platform context, prepare an infrastructure proposal, and open the portal review. It cannot approve, merge, or provision.',
+      'help':'A platform-help request would include checkout-api, the confirmed requirements, current proposal, policy evidence, and the unresolved question so the developer does not repeat the context.'
+    };return answers[key]||'I can help explain this context or prepare the next step, but that action is outside this scripted prototype.'}
+
+    function scrollChatToBottom(){
+      const body=document.querySelector('#chatDrawer .chat-body');
+      const bottom=document.getElementById('chatBottom');
+      if(!body)return;
+      const jump=()=>{
+        body.scrollTop=body.scrollHeight;
+        if(bottom)bottom.scrollIntoView({block:'end',inline:'nearest'});
+      };
+      requestAnimationFrame(()=>{
+        jump();
+        requestAnimationFrame(jump);
+        setTimeout(jump,80);
+      });
+    }
+
+    function addChatExchange(label,key){
+      const thread=document.getElementById('chatThread');
+      if(key==='start-deploy')return startDeploymentConversation();
+      thread.insertAdjacentHTML('beforeend',`<div class="user-message">${escapeHTML(label)}</div><div class="assistant-message"><div class="label" style="color:var(--purple);margin-bottom:4px">Compass</div>${askCompassQuestion(key)}</div>`);
+      scrollChatToBottom();
+    }
+
+    function sendMockPrompt(){
+      const input=document.getElementById('chatInput');
+      const value=input.value.trim();
+      if(!value)return;
+      const context=compassConfig().context;
+      const thread=document.getElementById('chatThread');
+      thread.insertAdjacentHTML('beforeend',`<div class="user-message">${escapeHTML(value)}</div><div class="assistant-message"><div class="label" style="color:var(--purple);margin-bottom:4px">Compass</div>I’m using <b>${context}</b>. In this concept prototype I can explain the available context, prepare a bounded next step, or route you to the structured portal action. I cannot approve, merge, or provision.</div>`);
+      input.value='';
+      scrollChatToBottom();
+    }
+
+    function openCompass(){
+      document.getElementById('serviceDrawer').classList.add('hidden');
+      const cfg=compassConfig();
+      document.getElementById('chatContext').innerHTML=`<div class="label">Current context</div><b>${cfg.context}</b>`;
+      document.getElementById('chatPromptLabel').textContent='Things you can ask Compass to do';
+      document.getElementById('chatPrompts').innerHTML=cfg.prompts.map(([key,label])=>`<button onclick="addChatExchange(this.textContent,'${key}')">${label}</button>`).join('');
+      document.getElementById('chatThread').innerHTML='<div class="assistant-message"><div class="label" style="color:var(--purple);margin-bottom:4px">Compass</div>I can help with this page using the application and platform context already available. What would you like to understand or prepare?</div>';
+      document.getElementById('chatDrawer').classList.remove('hidden');
+      scrollChatToBottom();
+    }
+
+    function startDeploymentConversation(){
+      state.view='prepare';
+      renderPrepare();
+      state.deployStep=0;
+      state.deploymentConversationComplete=false;
+      document.getElementById('serviceDrawer').classList.add('hidden');
+      document.getElementById('chatContext').innerHTML=`<div class="label">Current resource</div><b>checkout-api · Production not provisioned</b><div class="muted" style="margin-top:7px">Repo commerce/checkout-api · Node.js 20 · PostgreSQL · Service owner commerce-platform@company.com</div>`;
+      document.getElementById('chatPromptLabel').textContent='Suggested answers';
+      document.getElementById('chatThread').innerHTML='<div class="assistant-message"><div class="label" style="color:var(--purple);margin-bottom:4px">Compass</div>I found checkout-api, its repository, owners, runtime, database dependency, and staging health. I only need a few deployment assumptions to choose an approved infrastructure pattern.</div>';
+      document.getElementById('chatDrawer').classList.remove('hidden');
+      renderDeploymentTurn();
+    }
+
+    function renderDeploymentTurn(){
+      const turn=deploymentTurns[state.deployStep];
+      const thread=document.getElementById('chatThread');
+      thread.insertAdjacentHTML('beforeend',`<div class="assistant-message"><div class="label" style="color:var(--purple);margin-bottom:4px">Compass</div>${turn.question}</div>`);
+      document.getElementById('chatPrompts').innerHTML=turn.suggestions.map(value=>`<button onclick="answerDeploymentTurn('${escapeHTML(value)}')">${escapeHTML(value)}</button>`).join('');
+      scrollChatToBottom();
+    }
+
+    function answerDeploymentTurn(value){
+      const turn=deploymentTurns[state.deployStep];
+      if(turn.key==='traffic')state.traffic=value;
+      if(turn.key==='data')state.data=value;
+      if(turn.key==='decision')state.pattern='standard';
+      const thread=document.getElementById('chatThread');
+      thread.insertAdjacentHTML('beforeend',`<div class="user-message">${escapeHTML(value)}</div>`);
+      state.deployStep+=1;
+      if(state.deployStep<deploymentTurns.length){
+        renderDeploymentTurn();
+      }else{
+        if(!state.traffic)state.traffic='Steady';
+        if(!state.data)state.data='Yes';
+        state.deploymentConversationComplete=true;
+        thread.insertAdjacentHTML('beforeend','<div class="assistant-message"><div class="label" style="color:var(--purple);margin-bottom:4px">Compass</div>I recommend the approved container API foundation: managed container service, managed PostgreSQL, API gateway, workload identity, and standard telemetry. I can open the proposal now.</div>');
+        document.getElementById('chatPromptLabel').textContent='Next step';
+        document.getElementById('chatPrompts').innerHTML='<button class="primary-prompt" onclick="openProposalFromChat()">Open infrastructure proposal</button>';
+      }
+      scrollChatToBottom();
+    }
+
+    function openProposalFromChat(){
+      document.getElementById('chatDrawer').classList.add('hidden');
+      show('proposal');
+    }
+
+    document.querySelectorAll('.nav-btn').forEach(button=>button.addEventListener('click',()=>{
+      const destination=button.dataset.destination;
+      if(destination==='applications')show('workspace');
+      else if(destination==='deploy')show('prepare');
+      else if(destination==='connect')show('connect');
+      else alert('This destination is not implemented in the assessment prototype.');
+    }));
+    document.getElementById('askCompass').addEventListener('click',openCompass);
+    document.getElementById('closeChat').addEventListener('click',closeChatDrawer);
+    document.getElementById('sendChat').addEventListener('click',sendMockPrompt);
+    document.getElementById('chatInput').addEventListener('keydown',event=>{if(event.key==='Enter')sendMockPrompt()});
+    document.getElementById('closeServiceDrawer').addEventListener('click',()=>document.getElementById('serviceDrawer').classList.add('hidden'));
+    render();
+  </script>
+</body>
+</html>
