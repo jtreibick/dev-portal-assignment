@@ -1,5 +1,7 @@
 # Compass deployment workspace
 
+[Repository](https://github.com/jtreibick/intuitive-assignment) · [Prototype](prototype/index.html) · [Backlog](https://github.com/jtreibick/intuitive-assignment/issues)
+
 ## Executive summary
 
 AI is accelerating the path from an idea to working application code, but the path to compliant infrastructure is still slow and knowledge-intensive. Developers often have to assemble an answer from documentation, service catalogs, infrastructure-as-code (IaC) modules, policies, CI/CD systems, and conversations with platform engineers. Each source is useful; the coordination burden sits with the developer.
@@ -64,7 +66,7 @@ The first success criterion is learning whether the workflow helps a developer p
 - [Developer context](docs/mvp-delivery-context.md) — MVP assumptions, authority boundaries, and rollout context for the implementation backlog.
 - [Success metrics](success-metrics.md) — P0 measurement and the day-one event contract.
 - [Click-through prototype](prototype/index.html) — a self-contained, static workflow using sample data.
-- [GitHub Issues](https://github.com/jtreibick/intuitive-assignment/issues) — discovery and an MVP-first delivery backlog.
+- [GitHub Issues](https://github.com/jtreibick/intuitive-assignment/issues) — an implementation-first MVP backlog.
 
 ### Explore the prototype
 
