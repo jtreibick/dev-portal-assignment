@@ -45,21 +45,39 @@ The portal is the persistent workspace; embedded AI is contextual assistance wit
 
 ## Assumptions to validate
 
-We need to learn whether repository context is sufficient to build a useful first profile; whether targeted questions are genuinely fewer and clearer than the current research work; which application archetype has repeatable approved paths; and whether developers trust a recommendation when its rationale and validation status are visible. We also need to establish baseline time, completion, assistance, rework, and policy outcomes before asserting improvement.
+- Repository context is sufficient to create a useful first application profile.
+- Targeted questions are fewer and clearer than the developer’s current research work.
+- At least one application archetype has a repeatable, approved infrastructure path.
+- Developers trust recommendations when their rationale and validation status are visible.
+- Baseline time, completion, assistance, rework, and policy outcomes can be measured before improvement is claimed.
 
-## MVP scope and non-goals
+## MVP goals and non-goals
 
-The MVP focuses on one pilot persona, a small set of application archetypes, repository selection, profile confirmation, approved-path recommendation, deterministic validation, and PR handoff. It should capture decision and funnel evidence from day one.
+**MVP goals**
 
-It does not replace source control, CI/CD, policy engines, identity systems, cloud consoles, service catalogs, or platform review. It does not autonomously provision infrastructure, generate a production backend, support every repository type, or promise a general AI assistant for the entire SDLC.
+- Support one pilot persona and a small set of application archetypes.
+- Take a developer from repository selection through profile confirmation, an approved-path recommendation, deterministic validation, and PR handoff.
+- Capture decision and funnel evidence from day one.
+
+**Non-goals**
+
+- Replace source control, CI/CD, policy engines, identity systems, cloud consoles, service catalogs, or platform review.
+- Autonomously provision infrastructure or generate a production backend.
+- Support every repository type or act as a general AI assistant for the full SDLC.
 
 ## Risks and mitigations
 
-Incorrect inference can lead to a poor recommendation; expose source facts, confidence gaps, and a correction path. Overreliance on AI can erode control; preserve explicit confirmation and keep deterministic controls authoritative. A generic experience can hide important exceptions; begin with a constrained archetype and approved pattern library. Sensitive context can create telemetry risk; minimize analytics and exclude source code, secrets, sensitive prompts, and raw policy payloads. Make the downstream review and approval path explicit.
+- **Incorrect inference:** expose source facts, confidence gaps, and a correction path.
+- **Overreliance on AI:** preserve explicit developer confirmation and keep deterministic controls authoritative.
+- **Important exceptions hidden by a generic experience:** begin with a constrained archetype and approved pattern library.
+- **Sensitive context in telemetry:** minimize analytics and exclude source code, secrets, sensitive prompts, and raw policy payloads.
+- **Unclear downstream ownership:** make the review and approval path explicit.
 
 ## Success criteria
 
-The first success criterion is learning whether the workflow helps a developer produce a compliant, reviewable infrastructure change faster and with less platform-team intervention, without reducing trust or control. The detailed metrics, event dictionary, funnel, and privacy boundaries are in [success-metrics.md](success-metrics.md). Numerical targets will be set only after a baseline or pilot provides evidence.
+- Learn whether the workflow helps developers produce compliant, reviewable infrastructure changes faster and with less platform-team intervention, without reducing trust or control.
+- Measure the detailed metrics, event dictionary, funnel, and privacy boundaries in [success-metrics.md](success-metrics.md).
+- Set numerical targets only after a baseline or pilot provides evidence.
 
 ## Docs
 
