@@ -1,6 +1,6 @@
 # Compass deployment workspace
 
-[Repository](https://github.com/jtreibick/intuitive-assignment) · [Prototype](prototype/index.html) · [Backlog](https://github.com/jtreibick/intuitive-assignment/issues?q=is%3Aissue%20state%3Aopen%20sort%3Acreated-asc)
+[Repository](https://github.com/jtreibick/intuitive-assignment) · [Prototype](https://jtreibick.github.io/intuitive-assignment/prototype/index.html) · [Backlog](https://github.com/jtreibick/intuitive-assignment/issues?q=is%3Aissue%20state%3Aopen%20sort%3Acreated-asc)
 
 ## Executive summary
 
@@ -65,12 +65,12 @@ The first success criterion is learning whether the workflow helps a developer p
 
 - [Developer context](docs/mvp-delivery-context.md) — MVP assumptions, authority boundaries, and rollout context for the implementation backlog.
 - [Success metrics](success-metrics.md) — P0 measurement and the day-one event contract.
-- [Click-through prototype](prototype/index.html) — a self-contained, static workflow using sample data.
+- [Click-through prototype](https://jtreibick.github.io/intuitive-assignment/prototype/index.html) — a self-contained, static workflow using sample data.
 - [GitHub Issues](https://github.com/jtreibick/intuitive-assignment/issues?q=is%3Aissue%20state%3Aopen%20sort%3Acreated-asc) — an implementation-first MVP backlog.
 
 ### Explore the prototype
 
-Open [`prototype/index.html`](prototype/index.html) directly in a modern browser. It has no framework, backend, network calls, or production integration. Start in **Your applications**, expand `checkout-api`, open its service overview, and choose **Prepare production deployment**. The production-deployment path is the only end-to-end workflow; the floating chat icon opens contextual Compass assistance.
+Open the [hosted prototype](https://jtreibick.github.io/intuitive-assignment/prototype/index.html) in a modern browser. It has no framework, backend, network calls, or production integration. Start in **Your applications**, expand `checkout-api`, open its service overview, and choose **Determine infrastructure** from the Deploy tab. The production-deployment path is the only end-to-end workflow; the floating chat icon opens contextual Compass assistance.
 
 This is a static click-through prototype, not production code or a technical proof of concept. It uses fictional/sample application and policy data, creates no real infrastructure, and ends at a mock pull-request handoff with checks pending.
 
