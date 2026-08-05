@@ -1,6 +1,6 @@
 # Compass deployment workspace
 
-[Repository](https://github.com/jtreibick/dev-portal-assignment) · [Prototype](https://jtreibick.github.io/dev-portal-assignment/prototype/) · [Backlog](https://github.com/jtreibick/dev-portal-assignment/issues?q=is%3Aissue%20is%3Aopen%20sort%3Acreated-asc)
+[Repository](https://github.com/jtreibick/dev-portal-assignment) · [Prototype](https://jtreibick.github.io/dev-portal-assignment/) · [Backlog](https://github.com/jtreibick/dev-portal-assignment/issues?q=is%3Aissue%20is%3Aopen%20sort%3Acreated-asc)
 
 ## Executive summary
 
@@ -65,5 +65,5 @@ The first success criterion is learning whether the workflow helps a developer p
 
 - [Developer context](docs/mvp-delivery-context.md) — MVP assumptions, authority boundaries, and rollout context for the implementation backlog.
 - [Success metrics](success-metrics.md) — P0 measurement and the day-one event contract.
-- [Click-through prototype](https://jtreibick.github.io/dev-portal-assignment/prototype/) — a self-contained, static workflow using sample data.
+- [Click-through prototype](https://jtreibick.github.io/dev-portal-assignment/) — a self-contained, static workflow using sample data.
 - [GitHub Issues](https://github.com/jtreibick/dev-portal-assignment/issues?q=is%3Aissue%20is%3Aopen%20sort%3Acreated-asc) — an implementation-first MVP backlog.
