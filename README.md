@@ -61,17 +61,9 @@ Incorrect inference can lead to a poor recommendation; expose source facts, conf
 
 The first success criterion is learning whether the workflow helps a developer produce a compliant, reviewable infrastructure change faster and with less platform-team intervention, without reducing trust or control. The detailed metrics, event dictionary, funnel, and privacy boundaries are in [success-metrics.md](success-metrics.md). Numerical targets will be set only after a baseline or pilot provides evidence.
 
-## Review package
+## Docs
 
 - [Developer context](docs/mvp-delivery-context.md) — MVP assumptions, authority boundaries, and rollout context for the implementation backlog.
 - [Success metrics](success-metrics.md) — P0 measurement and the day-one event contract.
 - [Click-through prototype](https://jtreibick.github.io/intuitive-assignment/prototype/index.html) — a self-contained, static workflow using sample data.
 - [GitHub Issues](https://github.com/jtreibick/intuitive-assignment/issues?q=is%3Aissue%20state%3Aopen%20sort%3Acreated-asc) — an implementation-first MVP backlog.
-
-### Explore the prototype
-
-Open the [hosted prototype](https://jtreibick.github.io/intuitive-assignment/prototype/index.html) in a modern browser. It has no framework, backend, network calls, or production integration. Start in **Your applications**, expand `checkout-api`, open its service overview, and choose **Determine infrastructure** from the Deploy tab. The production-deployment path is the only end-to-end workflow; the floating chat icon opens contextual Compass assistance.
-
-This is a static click-through prototype, not production code or a technical proof of concept. It uses fictional/sample application and policy data, creates no real infrastructure, and ends at a mock pull-request handoff with checks pending.
-
-AI was used as a drafting and prototyping aid. Product framing, scope boundaries, sequencing, and final review were directed to make the tradeoffs explicit and reviewable.
