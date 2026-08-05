@@ -57,6 +57,8 @@
     .app-card{padding:0;overflow:hidden}
     .app-list-card{padding:0;overflow:hidden}
     .app-list-head{padding:13px 15px 9px;display:flex;justify-content:space-between;gap:13px;align-items:start}
+    .service-link{border:0;background:transparent;color:inherit;cursor:pointer;font:inherit;padding:0;text-align:left}
+    .service-link:hover{text-decoration:underline;text-decoration-color:var(--blue);text-underline-offset:3px}
     .app-list-body{padding:0 15px 9px}
     .compact-summary{display:flex;gap:8px 18px;flex-wrap:wrap;color:var(--muted);font-size:12px}
     .compact-summary b{color:var(--ink)}
@@ -221,7 +223,7 @@
     function setTop(){}
     function activateNav(destination){document.querySelectorAll('.nav-btn').forEach(button=>button.classList.toggle('active',button.dataset.destination===destination))}
     function show(view){state.view=view;render();window.scrollTo(0,0)}
-    function openServiceWorkspace(){state.serviceTab='overview';show('service')}
+    function openServiceWorkspace(tab='overview'){state.serviceTab=tab;show('service')}
     function selectServiceTab(tab){state.serviceTab=tab;renderServiceOverview()}
     function choose(key,value){state[key]=value;render()}
     function updateTuning(key,value){state[key]=value;state.changed=true;renderProposal()}
@@ -256,7 +258,7 @@
       const appCards=Object.entries(applicationCatalog).map(([id,a])=>`
         <article class="card app-list-card">
           <div class="app-list-head">
-            <div><div class="label">${a.kind}</div><h2 style="margin-top:4px">${id}</h2></div>
+            <div><div class="label">${a.kind}</div><h2 style="margin-top:4px">${id==='checkout-api'?`<button class="service-link" onclick="openServiceWorkspace()">${id}</button>`:id}</h2></div>
             <span class="pill ${a.lifecycleClass}">${a.lifecycle}</span>
           </div>
           <div class="app-list-body">
@@ -273,7 +275,7 @@
             <div class="row"><span>Service owner email</span><span>${a.ownerEmail}</span></div>
             <div class="row"><span>Infrastructure contact</span><span>${a.infraEmail}</span></div>
             <div class="row"><span>Latest activity</span><span>${a.activity}</span></div>
-            ${id==='checkout-api'?'<div class="right-actions" style="margin-top:12px"><button class="btn" onclick="document.getElementById(\'serviceDrawer\').classList.add(\'hidden\');openServiceWorkspace()">Open service workspace</button><button class="btn primary" onclick="startDeploymentConversation()">Determine infrastructure</button></div>':''}
+            ${id==='checkout-api'?'<div class="right-actions" style="margin-top:12px"><button class="btn primary" onclick="openServiceWorkspace(\'deploy\')">Deploy</button></div>':''}
           </div>
           <div class="card-actions"><button class="text-action" onclick="toggleInlineDetails('app-details-${id}',this)">${id==='checkout-api'?'Hide details ↑':'View details →'}</button></div>
         </article>`).join('');
@@ -388,10 +390,10 @@
               <div class="fact"><div class="label">Contacts</div><div class="value">Commerce Platform</div><div class="source">commerce-platform@company.com · cloud-platform@company.com</div></div>
             </div>
             <section class="card" style="margin-top:16px">
-              <div class="row"><span>Status</span><span><span class="pill ${hasDetermined?'':'blue'}">${hasDetermined?'Ready for proposal':'Needs AI interview'}</span></span></div>
+              <div class="row"><span>Status</span><span><span class="pill ${hasDetermined?'':'blue'}">${hasDetermined?'Ready for proposal':'Needs deployment input'}</span></span></div>
               <div class="row"><span>Traffic answer</span><span>${state.traffic||'Not collected yet'}</span></div>
               <div class="row"><span>Data sensitivity</span><span>${state.data||'Not collected yet'}</span></div>
-              <div class="right-actions" style="margin-top:14px"><button class="btn primary" onclick="startDeploymentConversation()">Determine infrastructure</button>${hasDetermined?'<button class="btn" onclick="show(\'proposal\')">Open proposal</button>':''}</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px"><strong>Determine infrastructure</strong><div class="right-actions"><button class="btn primary" onclick="startDeploymentConversation()">Next →</button>${hasDetermined?'<button class="btn" onclick="show(\'proposal\')">Open proposal</button>':''}</div></div>
             </section>
           </main>
           <aside class="card agent-note">
